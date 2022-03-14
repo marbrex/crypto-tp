@@ -179,8 +179,6 @@ public class CryptoMain {
         System.out.println(primesCount + " generations finished successfully");
         // System.out.println("Probability of n in [1;p-1] = " + primesCount + "%");
 
-        // q3
-
     }
 
     /**
@@ -225,8 +223,6 @@ public class CryptoMain {
         BigInteger a = aleaInf(p);
         System.out.println("\na: " + a);
         System.out.println("a bits: " + a.bitLength());
-
-        // q4
 
     }
 
@@ -279,7 +275,7 @@ public class CryptoMain {
         // q4
         // on peut pas calculer l'inverse de "p mod n",
         // car, comme mentionne ci-dessus, l'inverse est
-        // calculable si est seulement si n > 0 et PGCD(p, n) = 1.
+        // calculable si et seulement si n > 0 et PGCD(p, n) = 1.
         // Mais comme n=p*q => PGCD(p,n)=p
         // Donc l'inverse n'est pas calculable.
         try {
@@ -292,15 +288,76 @@ public class CryptoMain {
 
     public static void exo78() {
 
+        // q1
+        // Etant donne le fait que p et q sont des tres grands nombres
+        // d'a peu pres 1024 bits, on sait deja que l'on pourra pas
+        // trouver d'algorithme de factorisation de complexite
+        // polynomiale. On peut pas factoriser des grands nombres
+        // rapidement, un tel algorithme serait au moins NP-complet.
+        // En consequence, on ne peut pas utilsier un tel algo avec
+        // n = 2048 (car tres inefficace).
+
+        // q2
+        // En utilisant le theoreme de Fermat, on peut faire
+        // des calculs plus simples en connaissant le phi(n).
+        int lenBits = 1024;
+        SecureRandom rand = new SecureRandom();
+
+        BigInteger p = new BigInteger(lenBits, rand);
+        BigInteger q = new BigInteger(lenBits, rand);
+
+        BigInteger n = p.multiply(q);
+        BigInteger phiOfN = phi(p, q);
+
+        System.out.println("\nOriginal p and q:");
+        System.out.println("p: " + p);
+        System.out.println("q: " + q);
+
+        long startTime = System.currentTimeMillis();
+        BigInteger[] pAndQ = algoB(n, phiOfN);
+        long endTime = System.currentTimeMillis();
+
+        long time = (endTime - startTime);
+        System.out.println("\nalgoB(n, phiOfN) terminated in " + time + "ms (Very fast)");
+        // Algorithme termine tres vite !
+
+        System.out.println("Calculated p and q: ");
+        System.out.println("a: " + pAndQ[0]);
+        System.out.println("b: " + pAndQ[1]);
+
+        if ((p.compareTo(pAndQ[0]) == 0 && q.compareTo(pAndQ[1]) == 0) ||
+            (p.compareTo(pAndQ[1]) == 0 && q.compareTo(pAndQ[0]) == 0)) {
+            System.out.println("Original (p, q) == Calculated (p, q) !");
+        }
+
+        // q3
+        // Si un tel algorithme A' existe, ca veut dire que
+        // l'on peut factoriser n rapidement (cad calculer
+        // p et q vite), car on en a besoin pour calculer ф(n).
+        // Donc cela implique que l'on a un algo A rapide t.q. n->(p,q).
+        // Mais on vient de demontrer que l'algo A ne peut pas etre
+        // rapide et est au moins NP-complet. On peut pas utiliser
+        // l'algo B non plus pour trouver p et q, car il necessite
+        // ф(n) en parametres.
+        // En conclusion, on en deduit que A' n'existe pas.
+
+    }
+
+    public static BigInteger[] algoB(BigInteger n, BigInteger phiOfN) {
+        BigInteger s = n.add(phiOfN.multiply(BigInteger.valueOf(-1L))).add(BigInteger.ONE);
+        BigInteger aux = s.multiply(s).add(n.multiply(BigInteger.valueOf(-4L)));
+        BigInteger a = aux.sqrt().add(s).divide(BigInteger.TWO);
+        BigInteger b = aux.sqrt().multiply(BigInteger.valueOf(-1L)).add(s).divide(BigInteger.TWO);
+        return new BigInteger[] {a, b};
     }
 
     public static void main(String[] args) {
-        // exo73();
-        // exo74();
-        // exo75();
-        // exo76();
-        // exo77();
-         exo78();
+        exo73();
+        exo74();
+        exo75();
+        exo76();
+        exo77();
+        exo78();
     }
 
 }
