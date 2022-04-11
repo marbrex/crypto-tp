@@ -51,24 +51,36 @@ print('Decrypt ( Encrypt (', x, ')) = ', dx)
 
 ################ Tests des proprietes d'homomorphie ####################################
 
-#def oplus(X,Y,pk):
-#    ...
-#    return Z
+def oplus(encX, encY, pk):
+    n2 = pk * pk
+    return (encX * encY) % n2
 
-#def produitParConstante(X,y,pk):
-#    ...
-#    return Z
+def produitParConstante(encX, y, pk):
+    n2 = pk * pk
+    return pow(encX, y, n2)
 
+# def oppose(X, pk):
+#     n2 = pk * pk
+#     return mod_inverse(X, n2)
 
-#def oppose(X,pk):
-#   ...
-#   return Z
+y = 1000
+Y = encrypt(y, pk)
 
-y=1000
-Y=encrypt(y,pk)
+Z1 = oplus(X, Y, pk)
+Z2 = produitParConstante(X, y, pk)
+# Z3 = oppose(Y, pk)
 
-#Z1=oplus(X,Y,pk)
-#Z2=produitParConstante(X,y,pk)
-#Z3=oppose(Y,pk)
+print()
 
-#print(decrypt(Z1,pk,sk),decrypt(Z2,pk,sk),decrypt(Z3,pk,sk)-pk)
+# Preuves des proprietes d'homomorphie:
+v1 = decrypt(Z1, pk, sk)
+v2 = (x + y) % (pk*pk)
+if v1 == v2:
+    print(v1, " = ", v2)
+
+v3 = decrypt(Z2, pk, sk)
+v4 = (x * y) % (pk*pk)
+if v3 == v4:
+    print(v3, " = ", v4)
+
+# print(decrypt(Z3, pk, sk) - pk)
