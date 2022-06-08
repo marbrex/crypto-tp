@@ -66,7 +66,7 @@ public class Paillier {
      * @param to greater bound
      * @return random in (from;to) not included, i.e. from < random < to
      */
-    private static BigInteger randInInterval(int lenBits, BigInteger from, BigInteger to) {
+    public static BigInteger randInInterval(int lenBits, BigInteger from, BigInteger to) {
         BigInteger num;
         SecureRandom rand = new SecureRandom();
 

@@ -150,9 +150,38 @@ public class CryptoMain {
 
     }
 
+    public static void multProtocol() {
+        System.out.println("\n[MULT PROTOCOL]");
+
+        Key[] keys = Paillier.keyGen(1024);
+        Key pk = keys[0];
+        Key sk = keys[1];
+
+        try {
+            BigInteger x = BigInteger.valueOf(3L);
+            BigInteger y = BigInteger.valueOf(5L);
+            System.out.println("x: " + x);
+            System.out.println("y: " + y);
+
+            BigInteger X = Paillier.encrypt(x, pk);
+            BigInteger Y = Paillier.encrypt(y, pk);
+
+            BigInteger[] step1 = MultPrtcl.Bob.step1(pk, X, Y);
+            BigInteger step2 = MultPrtcl.Alice.step2(pk, sk, step1[0], step1[1]);
+            BigInteger step3 = MultPrtcl.Bob.step3(pk, step2, X, Y);
+
+            BigInteger product = Paillier.decrypt(step3, sk);
+            System.out.println("Product: " + product);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void main(String[] args) {
         exo79();
         paillierTest();
+        multProtocol();
     }
 
 }
