@@ -1,4 +1,6 @@
 import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 public class RSA {
@@ -53,6 +55,38 @@ public class RSA {
 
     public static BigInteger decrypt(BigInteger c, Key privateKey) {
         return c.modPow(privateKey.key, privateKey.N);
+    }
+
+    public static BigInteger sign(BigInteger m, Key privateKey) {
+        return RSA.sign(m, privateKey, "SHA-256");
+    }
+
+    public static BigInteger sign(BigInteger m, Key privateKey, String hashAlgo) {
+        try {
+            hashAlgo = hashAlgo == null || "".equals(hashAlgo) ? "SHA-256" : hashAlgo;
+            MessageDigest sha256 = MessageDigest.getInstance(hashAlgo);
+            BigInteger digest = new BigInteger(sha256.digest(m.toByteArray()));
+            return digest.modPow(privateKey.key, privateKey.N);
+
+        } catch (NoSuchAlgorithmException | NullPointerException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean verify(BigInteger m, BigInteger s, Key publicKey) {
+        return RSA.verify(m, s, publicKey, "SHA-256");
+    }
+
+    public static boolean verify(BigInteger m, BigInteger s, Key publicKey, String hashAlgo) {
+        try {
+            hashAlgo = hashAlgo == null || "".equals(hashAlgo) ? "SHA-256" : hashAlgo;
+            MessageDigest sha256 = MessageDigest.getInstance(hashAlgo);
+            BigInteger digest = new BigInteger(sha256.digest(m.toByteArray()));
+            return s.modPow(publicKey.key, publicKey.N).compareTo(digest) == 0;
+
+        } catch (NoSuchAlgorithmException | NullPointerException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

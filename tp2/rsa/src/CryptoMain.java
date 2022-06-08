@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 public class CryptoMain {
 
     public static void exo79() {
+        System.out.println("\n[EX 79]");
 
         // q1
         Key[] keys = RSA.keyGen(1024);
@@ -23,6 +24,12 @@ public class CryptoMain {
                 System.out.println("\nm: " + m);
                 System.out.println("plaintext: " + plaintext);
             }
+
+            BigInteger s = RSA.sign(c, sk);
+            if (RSA.verify(c, s, pk)) {
+                System.out.println("Signature Verified !");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -115,8 +122,37 @@ public class CryptoMain {
 
     }
 
+    public static void paillierTest() {
+        System.out.println("\n[PAILLIER]");
+
+        // q1
+        Key[] keys = Paillier.keyGen(1024);
+        Key pk = keys[0];
+        Key sk = keys[1];
+
+        try {
+            BigInteger m = BigInteger.valueOf(465234348);
+            BigInteger c = Paillier.encrypt(m, pk);
+
+            BigInteger plaintext = Paillier.decrypt(c, sk);
+
+            if (m.compareTo(plaintext) == 0) {
+                System.out.println("\nMATCH !");
+            }
+            else {
+                System.out.println("\nm: " + m);
+                System.out.println("plaintext: " + plaintext);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static void main(String[] args) {
         exo79();
+        paillierTest();
     }
 
 }
